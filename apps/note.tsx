@@ -21,7 +21,6 @@ export default function NoteApp({ buttonPosition }: NoteAppProps) {
       onRestore={() => restoreApp("Notes")}
       onClose={() => closeApp("Notes")}
       onMinimize={() => minimizeApp("Notes")}
-      isSearchBar={true}
       appName="Notes"
     >
       <div className=" w-full h-full bg-white p-4 pt-10 border-none overflow-auto">

@@ -114,17 +114,17 @@ export default function AppHandler({
         }
       }}
       onClick={isMinimized ? onRestore : undefined}
-      className=" bg-black absolute border-0 bg-clip-padding z-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 will-change-transform shadow-[0_0_30px_10px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden select-none touch-none"
+      className=" bg-black absolute border-0 bg-clip-padding z-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 will-change-transform shadow-[0_0_30px_10px_rgba(0,0,0,0.3)] touch-none rounded-3xl overflow-hidden select-none"
     >
       <div
         className={` p-3 ${!isOverLayed && navigateBarBGColor} ${
-          isOverLayed ? "absolute top-0 left-0 border-none w-full" : "relative"
+          isOverLayed ? "absolute top-0 select-none touch-none left-0 border-none w-full" : "relative"
         }`}
         style={
           navigateBarBorder ? { borderBottom: "1px solid rgba(0,0,0,0.1)" } : {}
         }
       >
-        <div className=" w-full flex gap-x-2 border-none ">
+        <div className=" w-full flex gap-x-2 select-none touch-none border-none ">
           <div
             onMouseEnter={() => setIsCloseHovered(true)}
             onMouseLeave={() => setIsCloseHovered(false)}
@@ -169,7 +169,7 @@ export default function AppHandler({
           </div>
         </div>
         {isSearchBar && (
-          <div className=" pt-3 flex">
+          <div className=" pt-3 flex select-none touch-none">
             <motion.input
               animate={{
                 marginRight: !isTyping ? 0 : 10,
