@@ -4,6 +4,7 @@ import { Minimize2, X, Maximize2, Minus } from "lucide-react";
 import { motion } from "motion/react";
 import { useState, useRef } from "react";
 import { useAppStore } from "../stores/appStore";
+import { Search } from "lucide-react";
 
 export default function AppHandler({
   standardWidth = 800,
@@ -15,6 +16,8 @@ export default function AppHandler({
   navigateBarBGColor,
   onRestore,
   onClose,
+  searchValue,
+  onSearchChange,
   onMinimize,
   isSearchBar,
   navigateBarBorder,
@@ -29,6 +32,8 @@ export default function AppHandler({
   children?: React.ReactNode;
   buttonPosition?: { x: number; y: number };
   isMinimized?: boolean;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
   onRestore?: () => void;
   onClose?: () => void;
   onMinimize?: () => void;
@@ -118,7 +123,9 @@ export default function AppHandler({
     >
       <div
         className={` p-3 ${!isOverLayed && navigateBarBGColor} ${
-          isOverLayed ? "absolute top-0 select-none touch-none left-0 border-none w-full" : "relative"
+          isOverLayed
+            ? "absolute top-0 select-none touch-none left-0 border-none w-full"
+            : "relative"
         }`}
         style={
           navigateBarBorder ? { borderBottom: "1px solid rgba(0,0,0,0.1)" } : {}
@@ -169,14 +176,20 @@ export default function AppHandler({
           </div>
         </div>
         {isSearchBar && (
-          <div className=" pt-3 flex select-none touch-none">
+          <div className=" pt-3 flex select-none relative touch-none">
+            <Search
+              size={16}
+              className=" absolute left-1 top-4.5 text-zinc-400"
+            />
             <motion.input
               animate={{
                 marginRight: !isTyping ? 0 : 10,
               }}
               type="text"
+              value={searchValue}
+              onChange={(e) => onSearchChange?.(e.target.value)}
               placeholder="Search..."
-              className="w-full p-1 border text-black placeholder:text-zinc-400 font-semibold text-sm px-2 border-zinc-300 rounded-lg"
+              className="w-full p-1 border pl-6 text-black placeholder:text-zinc-400 font-semibold text-sm px-2 border-zinc-300 rounded-lg"
               onFocus={() => setIsTyping(true)}
               onBlur={() => setIsTyping(false)}
             />
@@ -185,6 +198,8 @@ export default function AppHandler({
                 width: !isTyping ? 0 : "auto",
                 opacity: isTyping ? 1 : 0,
               }}
+              onClick={() => onSearchChange?.("")}
+              
               className=" text-blue-500 font-medium"
             >
               Cancel
