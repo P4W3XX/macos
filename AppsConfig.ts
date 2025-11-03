@@ -3,7 +3,6 @@ export const AppsConfig = {
     name: "Notes",
     iconPath: "/appsIcons/note.svg",
     componentPath: "@/apps/note",
-    isHidden: false,
     isOpen: false,
   },
 };

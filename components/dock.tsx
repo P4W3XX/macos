@@ -1,7 +1,7 @@
 "use client";
 
 import { DockApps } from "@/AppsConfig";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useAppStore } from "../stores/appStore";
 import { useRef, useEffect } from "react";
@@ -47,7 +47,7 @@ export default function Dock() {
   }, [setPosition]);
 
   return (
-    <main className=" absolute w-[99%] right-0 flex items-center px-2 left-0 mx-auto bottom-3 bg-white/30 h-18 backdrop-blur-3xl rounded-3xl">
+    <main className=" absolute w-[80%] border border-[#FFFFFFFF]/20 shadow-[0_4px_30px_20px_rgba(0,0,0,0.15)] right-0 flex items-end backdrop-blur-[5px] px-2 left-0 mx-auto bottom-3 bg-[#F6F6F6]/36 h-20 rounded-[22px]">
       {DockApps.map((app) => (
         <motion.button
           ref={(el) => {
@@ -69,6 +69,19 @@ export default function Dock() {
             height={24}
             className=" size-14 rounded-2xl"
           />
+          <AnimatePresence>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{
+                scale:
+                  apps[app.name]?.isOpen && !apps[app.name]?.isMinimized
+                    ? 1
+                    : 0,
+              }}
+              exit={{ scale: 0 }}
+              className=" mx-auto w-1.5 h-1.5 mt-1 mb-1 bg-black/60  rounded-full"
+            />
+          </AnimatePresence>
         </motion.button>
       ))}
     </main>

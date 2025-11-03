@@ -5,7 +5,6 @@ interface App {
   name: string;
   iconPath: string;
   componentPath: string;
-  isHidden: boolean;
   isOpen: boolean;
   isMinimized: boolean;
 }
@@ -22,7 +21,7 @@ interface AppStore {
   setWindowPosition: (appName: string, pos: { x: number; y: number }) => void;
 }
 
-export const useAppStore = create<AppStore>((set, get) => ({
+export const useAppStore = create<AppStore>((set) => ({
   apps: {
     [AppsConfig.NoteApp.name]: {
       ...AppsConfig.NoteApp,
