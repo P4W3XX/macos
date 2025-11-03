@@ -16,10 +16,7 @@ export default function Home() {
       <h1>Hello World</h1>
       <AnimatePresence>
         {apps["Notes"]?.isOpen && (
-          <NoteApp
-            key="note"
-            buttonPosition={positions["Notes"]}
-          />
+          <NoteApp key="note" buttonPosition={positions["Notes"]} />
         )}
       </AnimatePresence>
       <Dock />

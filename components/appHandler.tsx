@@ -114,7 +114,7 @@ export default function AppHandler({
         }
       }}
       onClick={isMinimized ? onRestore : undefined}
-      className=" bg-black absolute border-0 bg-clip-padding z-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 will-change-transform shadow-[0_0_30px_10px_rgba(0,0,0,0.3)] touch-none rounded-3xl overflow-hidden select-none"
+      className=" bg-black absolute bg-clip-padding z-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 will-change-transform shadow-[0_0_30px_10px_rgba(0,0,0,0.25)] border border-zinc-400 touch-none rounded-3xl overflow-hidden select-none"
     >
       <div
         className={` p-3 ${!isOverLayed && navigateBarBGColor} ${
@@ -129,7 +129,7 @@ export default function AppHandler({
             onMouseEnter={() => setIsCloseHovered(true)}
             onMouseLeave={() => setIsCloseHovered(false)}
             onClick={onClose}
-            className=" size-4 bg-red-600 rounded-full flex items-center justify-center cursor-pointer"
+            className=" size-4 bg-[#FF5F57] border border-black/20 rounded-full flex items-center justify-center cursor-pointer"
           >
             {isCloseHovered && (
               <X strokeWidth={3} className=" size-3 font-black text-black" />
@@ -139,7 +139,7 @@ export default function AppHandler({
             onMouseEnter={() => setIsExpandedHovered(true)}
             onMouseLeave={() => setIsExpandedHovered(false)}
             onClick={() => setIsExpanded(!isExpanded)}
-            className=" size-4 bg-amber-600 rounded-full flex items-center justify-center"
+            className=" size-4 bg-[#FEBC2E] rounded-full border border-black/20 flex items-center justify-center"
           >
             {isExpandedHovered &&
               (isExpanded ? (
@@ -155,7 +155,7 @@ export default function AppHandler({
               ))}
           </div>
           <div
-            className=" size-4 bg-green-600 rounded-full flex items-center justify-center cursor-pointer"
+            className=" size-4 bg-[#28C840] border border-black/20 rounded-full flex items-center justify-center cursor-pointer"
             onMouseEnter={() => setIsHideHovered(true)}
             onMouseLeave={() => setIsHideHovered(false)}
             onClick={onMinimize}
