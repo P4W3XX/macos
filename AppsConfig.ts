@@ -1,4 +1,12 @@
-export const AppsConfig = {
+interface AppConfig {
+  name: string;
+  iconPath: string;
+  componentPath: string;
+  isHidden: boolean;
+  isOpen: boolean;
+}
+
+export const AppsConfig: Record<string, AppConfig> = {
   NoteApp: {
     name: "Notes",
     iconPath: "/appsIcons/note.svg",
@@ -6,8 +14,16 @@ export const AppsConfig = {
     isHidden: false,
     isOpen: false,
   },
+  CalculatorApp: {
+    name: "Calculator",
+    iconPath: "/appsIcons/calculator.png",
+    componentPath: "@/apps/calculator",
+    isHidden: false,
+    isOpen: false,
+  },
 };
 
 export const DockApps = [
-    AppsConfig.NoteApp,
+  AppsConfig.NoteApp,
+  AppsConfig.CalculatorApp,
 ];
