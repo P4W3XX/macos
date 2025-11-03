@@ -16,7 +16,7 @@ export const AppsConfig: Record<string, AppConfig> = {
   },
   CalculatorApp: {
     name: "Calculator",
-    iconPath: "/appsIcons/calculator.png",
+    iconPath: "/appsIcons/calculator.svg",
     componentPath: "@/apps/calculator",
     isHidden: false,
     isOpen: false,
