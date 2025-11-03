@@ -27,6 +27,10 @@ export const useAppStore = create<AppStore>((set) => ({
       ...AppsConfig.NoteApp,
       isMinimized: false,
     },
+    [AppsConfig.CalculatorApp.name]: {
+      ...AppsConfig.CalculatorApp,
+      isMinimized: false,
+    },
   },
   toggleApp: (appName) =>
     set((state) => ({

@@ -12,6 +12,7 @@ export default function Dock() {
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const handleClick = (appName: string) => {
+    console.log("Clicked on", appName);
     if (apps[appName]?.isMinimized) {
       restoreApp(appName);
     } else if (apps[appName]?.isOpen) {

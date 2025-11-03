@@ -1,6 +1,7 @@
 "use client";
 
 import NoteApp from "@/apps/note";
+import CalculatorApp from "@/apps/calculator";
 import Dock from "@/components/dock";
 import Topbar from "@/components/topbar";
 import { useAppStore } from "@/stores/appStore";
@@ -18,6 +19,9 @@ export default function Home() {
       <AnimatePresence>
         {apps["Notes"]?.isOpen && (
           <NoteApp key="note" buttonPosition={positions["Notes"]} />
+        )}
+        {apps["Calculator"]?.isOpen && (
+          <CalculatorApp key="calculator" buttonPosition={positions["Calculator"]} />
         )}
       </AnimatePresence>
       <Dock />
