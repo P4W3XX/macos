@@ -48,8 +48,8 @@ export default function CalculatorApp({ buttonPosition }: NoteAppProps) {
       onMinimize={() => minimizeApp("Calculator")}
       appName="Calculator"
     >
-      <main className=" w-full h-full bg-zinc-400  pt-10 border-none w-full h-full">
-        <section className="h-[4rem]">
+      <main className=" w-full h-full bg-zinc-400  pt-10 border-none">
+        <section className="h-16">
           <input
             className="text-bottom text-6xl font-semibold w-full h-full text-right px-2"
             type="text"

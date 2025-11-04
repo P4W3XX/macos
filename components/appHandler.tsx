@@ -43,7 +43,7 @@ export default function AppHandler({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isExpandedHovered, setIsExpandedHovered] = useState(false);
   const [isHideHovered, setIsHideHovered] = useState(false);
-  const { windowPositions, setWindowPosition } = useAppStore();
+  const { windowPositions, setWindowPosition, zIndexes, bringToFront } = useAppStore();
   const [isTyping, setIsTyping] = useState(false);
   const motionRef = useRef<HTMLDivElement>(null);
   const initialX =
@@ -118,8 +118,9 @@ export default function AppHandler({
           });
         }
       }}
-      onClick={isMinimized ? onRestore : undefined}
-      className=" bg-black absolute bg-clip-padding z-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 will-change-transform shadow-[0_0_30px_10px_rgba(0,0,0,0.25)] border border-zinc-400 touch-none rounded-3xl overflow-hidden select-none"
+      onClick={isMinimized ? onRestore : () => appName && bringToFront(appName)}
+      className=" bg-black absolute bg-clip-padding top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 will-change-transform shadow-[0_0_30px_10px_rgba(0,0,0,0.25)] border border-zinc-400 touch-none rounded-3xl overflow-hidden select-none"
+      style={{ zIndex: zIndexes[appName || ''] || 100 }}
     >
       <div
         className={` p-3 ${!isOverLayed && navigateBarBGColor} ${

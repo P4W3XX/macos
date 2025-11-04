@@ -6,6 +6,7 @@ import Dock from "@/components/dock";
 import Topbar from "@/components/topbar";
 import { useAppStore } from "@/stores/appStore";
 import { AnimatePresence } from "framer-motion";
+import FinderApp from "@/apps/finder";
 
 export default function Home() {
   const { apps, positions } = useAppStore();
@@ -22,6 +23,9 @@ export default function Home() {
         )}
         {apps["Calculator"]?.isOpen && (
           <CalculatorApp key="calculator" buttonPosition={positions["Calculator"]} />
+        )}
+        {apps["Finder"]?.isOpen && (
+          <FinderApp key="finder" buttonPosition={positions["Finder"]} />
         )}
       </AnimatePresence>
       <Dock />
