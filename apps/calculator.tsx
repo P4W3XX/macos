@@ -65,6 +65,7 @@ export default function CalculatorApp({ buttonPosition }: NoteAppProps) {
         <aside className="w-full grid-cols-4 grid ">
           {calculatorSpecs.map((btn) => {
             const isOperator = ["x", "-", "+", "÷", "="].includes(btn.name);
+            const lastChar = value[value?.length - 1];
             return (
               <button
                 key={btn.name}
@@ -77,7 +78,11 @@ export default function CalculatorApp({ buttonPosition }: NoteAppProps) {
                       return (parseFloat(prev) * -1).toString();
                     } else if (btn.name === "%") {
                       return (parseFloat(prev) / 100).toString();
-                    } else if (btn.name === "=") {
+                    }
+                    else if (lastChar === "+" || lastChar === "-" || lastChar === "x" || lastChar === "÷") {
+                      setValue(value);
+                    }
+                    else if (btn.name === "=") {
                       try {
                         const sanitizedExpression = prev
                           .replace(/x/g, "*")
