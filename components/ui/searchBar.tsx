@@ -4,7 +4,13 @@ import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
-export default function SearchBar() {
+export default function SearchBar({
+  searchValue,
+  onSearchChange,
+}: {
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+}) {
   const [isTyping, setIsTyping] = useState(false);
 
   return (
@@ -16,6 +22,8 @@ export default function SearchBar() {
           marginRight: !isTyping ? 0 : 10,
         }}
         type="text"
+        value={searchValue}
+        onChange={(e) => onSearchChange(e.target.value)}
         placeholder="Search..."
         className=" p-1 border bg-white pl-6 w-full text-black placeholder:text-zinc-400 font-semibold text-sm px-2 border-zinc-300 rounded-lg"
         onFocus={() => setIsTyping(true)}
@@ -27,6 +35,7 @@ export default function SearchBar() {
           width: !isTyping ? 0 : "auto",
           opacity: isTyping ? 1 : 0,
         }}
+        onClick={() => onSearchChange("")}
         className=" text-blue-500 font-medium"
       >
         Cancel

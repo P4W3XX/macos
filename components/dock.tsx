@@ -1,15 +1,16 @@
 "use client";
 
 import { DockApps } from "@/AppsConfig";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useAppStore } from "../stores/appStore";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 export default function Dock() {
   const { apps, toggleApp, minimizeApp, restoreApp, setPosition } =
     useAppStore();
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const handleClick = (appName: string) => {
     console.log("Clicked on", appName);
@@ -48,28 +49,58 @@ export default function Dock() {
   }, [setPosition]);
 
   return (
-    <main className=" absolute w-[99%] right-0 flex items-center px-2 left-0 mx-auto bottom-3 bg-white/30 h-18 backdrop-blur-3xl rounded-3xl">
-      {DockApps.map((app) => (
+    <main className=" absolute w-[80%] border border-[#FFFFFFFF]/20 shadow-[0_4px_30px_20px_rgba(0,0,0,0.15)] right-0 flex items-end backdrop-blur-[5px] px-0.5 left-0 mx-auto bottom-3 bg-[#F6F6F6]/36 h-19 rounded-[22px]">
+      {DockApps.map((app, index) => ( 
         <motion.button
           ref={(el) => {
             buttonRefs.current[app.name] = el;
-          }}
-          whileHover={{ scale: 1.4, y: -30 }}
-          whileTap={{ scale: 1.1 }}
-          key={app.name}
-          className=" group relative"
-          onClick={() => handleClick(app.name)}
-        >
+            }}
+            animate={{
+            scale:
+              hoveredIndex === null
+              ? 1
+              : index === hoveredIndex
+              ? 1.4
+              : Math.abs(index - hoveredIndex) === 1
+              ? 1.05
+              : 1,
+            y:
+              hoveredIndex === null
+              ? 0
+              : index === hoveredIndex
+              ? -10
+              : Math.abs(index - hoveredIndex) === 1
+              ? -5
+              : 0,
+            }}
+            whileTap={{ scale: 1.1 }}
+            key={app.name}
+            className=" group relative"
+            onClick={() => handleClick(app.name)}
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
           <h1 className=" absolute left-0 right-0 mx-auto w-fit -top-5 group-hover:opacity-100 text-shadow-lg/40 opacity-0 transition-opacity font-semibold z-10 text-white text-sm">
             {app.name}
           </h1>
           <Image
             src={app.iconPath}
             alt={app.name}
-            width={24}
-            height={24}
-            className=" size-14 rounded-2xl"
+            quality={100}
+            width={60}
+            height={60}
           />
+          <AnimatePresence>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{
+                scale:
+                  apps[app.name]?.isOpen || apps[app.name]?.isMinimized ? 1 : 0,
+              }}
+              exit={{ scale: 0 }}
+              className=" mx-auto w-1.5 h-1.5 mb-1 bg-black/60 rounded-full"
+            />
+          </AnimatePresence>
         </motion.button>
       ))}
     </main>
