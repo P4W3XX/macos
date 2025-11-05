@@ -1,6 +1,6 @@
 import AppHandler from "@/components/appHandler";
 import { useAppStore } from "@/stores/appStore";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { evaluate } from "mathjs";
 
 interface NoteAppProps {
@@ -31,8 +31,21 @@ export default function CalculatorApp({ buttonPosition }: NoteAppProps) {
     { name: "." },
     { name: "=" },
   ];
-
   const [value, setValue] = useState<string>("0");
+
+  const lastChar = value[value.length - 1];
+  const isLastCharOperator = (char: string) => {
+    return ["x", "-", "+", "÷"].includes(char);
+  };
+  const isLastCharDot = (char: string) => {
+  return char === ".";
+};
+const displayRef = useRef<HTMLInputElement>(null);
+useEffect(()=>{
+  if(displayRef.current){
+    displayRef.current.scrollLeft=displayRef.current.scrollWidth;
+  }
+},[value])
 
   return (
     <AppHandler
@@ -48,73 +61,81 @@ export default function CalculatorApp({ buttonPosition }: NoteAppProps) {
       onMinimize={() => minimizeApp("Calculator")}
       appName="Calculator"
     >
-      <main className=" w-full h-full bg-zinc-400  pt-10 border-none">
-        <section className="h-16">
-          <input
-            className="text-bottom text-6xl font-semibold w-full h-full text-right px-2"
-            type="text"
-            onChange={(e) => {
-              const value = e.target.value;
-              if (/^\d*$/.test(value)) {
-                setValue(value);
-              }
-            }}
-            value={value}
-          ></input>
-        </section>
-        <aside className="w-full grid-cols-4 grid ">
-          {calculatorSpecs.map((btn) => {
-            const isOperator = ["x", "-", "+", "÷", "="].includes(btn.name);
-            const lastChar = value[value?.length - 1];
-            return (
-              <button
-                key={btn.name}
-                onClick={() => {
-                  setValue((prev) => {
-                    if (btn.name === "AC") {
-                      return "0";
-                    } else if (btn.name === "+/-") {
-                      if (prev === "0") return prev;
-                      return (parseFloat(prev) * -1).toString();
-                    } else if (btn.name === "%") {
-                      return (parseFloat(prev) / 100).toString();
+         <main className="w-full h-full bg-zinc-400 pt-10 border-none">
+      <section className="h-16">
+        <input
+        ref={displayRef}
+          className={`text-bottom ${value.length >=13 ? "text-3xl" : value.length>=8 ?"text-4xl":"text-6xl"} font-semibold w-full h-full text-right px-2`}
+          type="text"
+          onChange={(e) => {
+            setValue(e.target.value);
+            const lastChar = value[value.length - 1];
+
+            if (
+              /^\d*$/.test(value) ||
+              (isLastCharOperator(lastChar) && !isLastCharOperator(value[value.length - 1])) ||
+              (isLastCharDot(lastChar) && !isLastCharOperator(value[value.length - 2])) ||
+              (lastChar === "=")
+            ) {
+              setValue(value);
+            }
+          }}
+          value={value}
+        />
+      </section>
+      <aside className="w-full grid-cols-4 grid border-none">
+        {calculatorSpecs.map((btn) => {
+          const isOperator = ["x", "-", "+", "÷", "="].includes(btn.name);
+          return (
+            <button
+              key={btn.name}
+              onClick={() => {
+                setValue((prev) => {
+                  if (btn.name === "AC") {
+                    return "0";
+                  } else if (btn.name === "+/-") {
+                    if (prev === "0") return prev;
+                    return (parseFloat(prev) * -1).toString();
+                  } else if (btn.name === "%") {
+                    return (parseFloat(prev) / 100).toString();
+                  } else if (isLastCharOperator(lastChar) && isOperator) {
+                    return prev; 
+                  } else if (btn.name === ".") {
+                    if (isLastCharDot(lastChar) || isLastCharOperator(lastChar)) {
+                      return prev; 
                     }
-                    else if (lastChar === "+" || lastChar === "-" || lastChar === "x" || lastChar === "÷") {
-                      setValue(value);
+                    return prev + btn.name;
+                  } else if (btn.name === "=") {
+                    try {
+                      const sanitizedExpression = prev
+                        .replace(/x/g, "*")
+                        .replace(/÷/g, "/");
+                      const result = evaluate(sanitizedExpression);
+                      return result.toString();
+                    } catch {
+                      return "Error";
                     }
-                    else if (btn.name === "=") {
-                      try {
-                        const sanitizedExpression = prev
-                          .replace(/x/g, "*")
-                          .replace(/÷/g, "/");
-                        const result = evaluate(sanitizedExpression);
-                        return result.toString();
-                      } catch {
-                        return "Error";
-                      }
+                  } else {
+                    if (prev === "0") {
+                      return btn.name;
                     } else {
-                      if (prev === "0") {
-                        return btn.name;
-                      } else {
-                        return prev + btn.name;
-                      }
+                      return prev + btn.name;
                     }
-                  });
-                }}
-                className={`${
-                  isOperator
-                    ? "bg-amber-500/90 hover:bg-amber-500/70 active:bg-amber-500/80"
-                    : "bg-zinc-500/40 hover:bg-zinc-500/60 active:bg-zinc-500/80 "
-                } ${
-                  btn.name === "0" && "col-span-2"
-                } p-4 text-2xl font-medium border border-zinc-500/70 cursor-pointer`}
-              >
-                {btn.name}
-              </button>
-            );
-          })}
-        </aside>
-      </main>
+                  }
+                });
+              }}
+              className={`${
+                isOperator
+                  ? "bg-amber-500/90 hover:bg-amber-500/70 active:bg-amber-500/80"
+                  : "bg-zinc-500/40 hover:bg-zinc-500/60 active:bg-zinc-500/80 "
+              } ${btn.name === "0" && "col-span-2"} p-4 text-2xl font-medium border border-zinc-500/70 cursor-pointer`}
+            >
+              {btn.name}
+            </button>
+          );
+        })}
+      </aside>
+    </main>
     </AppHandler>
   );
 }
