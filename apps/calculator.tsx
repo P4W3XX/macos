@@ -62,7 +62,7 @@ export default function CalculatorApp({ buttonPosition }: NoteAppProps) {
             value={value}
           ></input>
         </section>
-        <aside className="w-full grid-cols-4 grid ">
+        <aside className="w-full grid-cols-4 grid border-none">
           {calculatorSpecs.map((btn) => {
             const isOperator = ["x", "-", "+", "÷", "="].includes(btn.name);
             const lastChar = value[value?.length - 1];
