@@ -69,9 +69,9 @@ export default function NoteApp({ buttonPosition }: NoteAppProps) {
       isOverLayed={false}
       navigateBarBGColor="bg-white"
       searchValue={searchValue}
+      isSidebar={false}
       onSearchChange={setSearchValue}
       isSearchBar={true}
-      navigateBarBorder={true}
       buttonPosition={buttonPosition}
       isMinimized={app?.isMinimized || false}
       onRestore={() => restoreApp("Notes")}

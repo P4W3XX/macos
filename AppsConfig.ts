@@ -80,6 +80,33 @@ export const AppsConfig: Record<string, AppConfig> = {
       },
     ],
   },
+  Settings: {
+    name: "Settings",
+    iconPath: "/appsIcons/settings.svg",
+    componentPath: "@/apps/settings",
+    isOpen: false,
+    appOption: [
+      {
+        name: "General",
+        do: () => {
+          console.log("General");
+        },
+        shortcut: "⌘ G",
+      },
+      {
+        name: "Privacy",
+        do: () => {
+          console.log("Privacy");
+        },
+        shortcut: "⌘ P",
+      },
+    ],
+  },
 };
 
-export const DockApps = [AppsConfig.Finder,AppsConfig.NoteApp, AppsConfig.CalculatorApp];
+export const DockApps = [
+  AppsConfig.Finder,
+  AppsConfig.NoteApp,
+  AppsConfig.CalculatorApp,
+  AppsConfig.Settings,
+];

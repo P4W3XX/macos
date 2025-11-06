@@ -53,7 +53,6 @@ useEffect(()=>{
       standardHeight={430}
       isOverLayed={true}
       navigateBarBGColor="bg-gray-200"
-      navigateBarBorder={false}
       buttonPosition={buttonPosition}
       isMinimized={app?.isMinimized || false}
       onRestore={() => restoreApp("Calculator")}

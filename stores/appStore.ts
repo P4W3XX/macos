@@ -38,6 +38,10 @@ export const useAppStore = create<AppStore>((set) => ({
       ...AppsConfig.Finder,
       isMinimized: false,
     },
+    [AppsConfig.Settings.name]: {
+      ...AppsConfig.Settings,
+      isMinimized: false,
+    },
   },
   toggleApp: (appName) =>
     set((state) => {

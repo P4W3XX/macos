@@ -4,105 +4,181 @@ import { DockApps } from "@/AppsConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useAppStore } from "../stores/appStore";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useState, useLayoutEffect, useCallback } from "react";
+import useAppearanceSettings from "@/stores/settingsStore";
+
+// Stałe
+const BASE_ICON_SIZE = 64;
+const GAP_PX = 2;
 
 export default function Dock() {
   const { apps, toggleApp, minimizeApp, restoreApp, setPosition } =
     useAppStore();
-  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const handleClick = (appName: string) => {
-    console.log("Clicked on", appName);
-    if (apps[appName]?.isMinimized) {
-      restoreApp(appName);
-    } else if (apps[appName]?.isOpen) {
-      minimizeApp(appName);
-    } else {
-      const button = buttonRefs.current[appName];
-      if (button) {
-        const rect = button.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        setPosition(appName, { x: centerX, y: centerY });
+  const { dockAnimation } = useAppearanceSettings(); // Wartość z ustawień
+
+  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  // Zmiana: ustawiamy stan mouseX tylko, gdy dockAnimation jest włączone
+  const [mouseX, setMouseX] = useState<number | null>(null);
+  const [baseCenters, setBaseCenters] = useState<Record<string, number>>({});
+
+  useLayoutEffect(() => {
+    const measureCenters = () => {
+      const newCenters: Record<string, number> = {};
+
+      DockApps.forEach((app) => {
+        const el = buttonRefs.current[app.name];
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          newCenters[app.name] = rect.left + rect.width / 2;
+        }
+      });
+
+      setBaseCenters(newCenters);
+    };
+
+    // Mierzenie center zawsze jest potrzebne, nawet bez animacji,
+    // jeśli dock ma pozostać w tym samym miejscu.
+    measureCenters();
+
+    window.addEventListener("resize", measureCenters);
+    return () => window.removeEventListener("resize", measureCenters);
+  }, []);
+
+  const handleClick = useCallback(
+    (appName: string) => {
+      const app = apps[appName];
+      if (app?.isMinimized) {
+        restoreApp(appName);
+      } else if (app?.isOpen) {
+        minimizeApp(appName);
+      } else {
+        const el = buttonRefs.current[appName];
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          // Ustawia pozycję startową animacji okna
+          setPosition(appName, { x: centerX, y: centerY });
+        }
+        toggleApp(appName);
       }
-      toggleApp(appName);
+    },
+    [apps, minimizeApp, restoreApp, toggleApp, setPosition]
+  );
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Aktualizuj mouseX tylko, jeśli animacja jest włączona
+    if (dockAnimation) {
+      setMouseX(e.clientX);
     }
   };
 
-  useEffect(() => {
-    const updatePositions = () => {
-      DockApps.forEach((app) => {
-        const button = buttonRefs.current[app.name];
-        if (button) {
-          const rect = button.getBoundingClientRect();
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
-          setPosition(app.name, { x: centerX, y: centerY });
-        }
-      });
-    };
+  const handleMouseLeave = () => {
+    // Resetuj mouseX tylko, jeśli animacja jest włączona
+    if (dockAnimation) {
+      setMouseX(null);
+    }
+  };
 
-    updatePositions();
-    window.addEventListener("resize", updatePositions);
-    return () => window.removeEventListener("resize", updatePositions);
-  }, [setPosition]);
+  const getIconAnimation = useCallback(
+    (appName: string) => {
+      // Zmiana: Jeśli dockAnimation jest false, zwróć domyślne wartości
+      if (!dockAnimation || mouseX === null || !baseCenters[appName]) {
+        return { scale: 1, x: 0, y: 0 };
+      }
+
+      const center = baseCenters[appName];
+      const distance = Math.abs(mouseX - center);
+
+      const maxDistance = 200;
+      const maxScale = 1.6;
+      const minScale = 1;
+      const pushFactor = 0.35;
+      const yFactor = -22;
+
+      const normalized = Math.max(0, 1 - distance / maxDistance);
+      const scale = minScale + normalized * (maxScale - minScale);
+      const y = normalized * yFactor;
+      const x = (center - mouseX) * normalized * pushFactor;
+
+      return { scale, x, y };
+    },
+    // Dodajemy dockAnimation do zależności, aby hook był reagował na zmianę ustawienia
+    [mouseX, baseCenters, dockAnimation]
+  );
 
   return (
-    <main className=" absolute w-[80%] border border-[#FFFFFFFF]/20 shadow-[0_4px_30px_20px_rgba(0,0,0,0.15)] right-0 flex items-end backdrop-blur-[5px] px-0.5 left-0 mx-auto bottom-3 bg-[#F6F6F6]/36 h-19 rounded-[22px]">
-      {DockApps.map((app, index) => ( 
-        <motion.button
-          ref={(el) => {
-            buttonRefs.current[app.name] = el;
-            }}
-            animate={{
-            scale:
-              hoveredIndex === null
-              ? 1
-              : index === hoveredIndex
-              ? 1.4
-              : Math.abs(index - hoveredIndex) === 1
-              ? 1.05
-              : 1,
-            y:
-              hoveredIndex === null
-              ? 0
-              : index === hoveredIndex
-              ? -10
-              : Math.abs(index - hoveredIndex) === 1
-              ? -5
-              : 0,
-            }}
-            whileTap={{ scale: 1.1 }}
-            key={app.name}
-            className=" group relative"
-            onClick={() => handleClick(app.name)}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
-          <h1 className=" absolute left-0 right-0 mx-auto w-fit -top-5 group-hover:opacity-100 text-shadow-lg/40 opacity-0 transition-opacity font-semibold z-10 text-white text-sm">
-            {app.name}
-          </h1>
-          <Image
-            src={app.iconPath}
-            alt={app.name}
-            quality={100}
-            width={60}
-            height={60}
-          />
-          <AnimatePresence>
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{
-                scale:
-                  apps[app.name]?.isOpen || apps[app.name]?.isMinimized ? 1 : 0,
+    <motion.div
+      className="absolute left-0 right-0 mx-auto bottom-3
+             flex items-end justify-center w-fit
+             backdrop-blur-[6px] 
+             bg-[#F6F6F6]/30 border border-white/20 
+             shadow-[0_4px_30px_20px_rgba(0,0,0,0.15)]
+             h-20 rounded-[22px]
+             px-1"
+      // Warunkowe ustawienie event handlerów
+      onMouseMove={dockAnimation ? handleMouseMove : undefined}
+      onMouseLeave={dockAnimation ? handleMouseLeave : undefined}
+    >
+      <div className="flex items-end h-full" style={{ gap: `${GAP_PX}px` }}>
+        {DockApps.map((app) => {
+          // Funkcja getIconAnimation już zajmuje się warunkową animacją
+          const { scale, x, y } = getIconAnimation(app.name);
+
+          return (
+            <motion.button
+              key={app.name}
+              ref={(el: HTMLButtonElement | null) => {
+                buttonRefs.current[app.name] = el;
               }}
-              exit={{ scale: 0 }}
-              className=" mx-auto w-1.5 h-1.5 mb-1 bg-black/60 rounded-full"
-            />
-          </AnimatePresence>
-        </motion.button>
-      ))}
-    </main>
+              // Zmiana: animate zawsze używa wartości ze scale, x, y, które będą równe {1, 0, 0} gdy animacja jest wyłączona
+              animate={{ scale, x, y }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 20,
+                mass: 0.8,
+              }}
+              // whileTap nadal działa
+              whileTap={{ scale: scale * 0.9 }}
+              onClick={() => handleClick(app.name)}
+              className="group relative"
+            >
+              <div
+                className={`absolute bg-[#F6F6F6]/30 border border-white/20 rounded-sm px-3 left-0 right-0 mx-auto w-fit font-semibold z-10 text-white backdrop-blur-3xl ${
+                  dockAnimation ? "-top-6 text-[12px]" : "-top-10 text-[15px]"
+                } opacity-0 group-hover:opacity-100 transition-opacity`}
+              >
+                <h1>{app.name}</h1>
+              </div>
+              <Image
+                src={app.iconPath}
+                alt={app.name}
+                quality={100}
+                width={BASE_ICON_SIZE}
+                height={BASE_ICON_SIZE}
+                className="select-none pointer-events-none"
+              />
+
+              {/* Kropka */}
+              <AnimatePresence>
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{
+                    scale:
+                      apps[app.name]?.isOpen || apps[app.name]?.isMinimized
+                        ? 1
+                        : 0,
+                  }}
+                  exit={{ scale: 0 }}
+                  className="mx-auto w-1.5 h-1.5 mb-1 bg-black/70 rounded-full"
+                />
+              </AnimatePresence>
+            </motion.button>
+          );
+        })}
+      </div>
+    </motion.div>
   );
 }

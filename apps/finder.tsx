@@ -20,10 +20,9 @@ export default function FinderApp({ buttonPosition }: FinderAppProps) {
       searchValue={searchValue}
       onSearchChange={setSearchValue}
       isSearchBar={true}
-      navigateBarBorder={true}
       buttonPosition={buttonPosition}
       isMinimized={app?.isMinimized || false}
-      onRestore={() => restoreApp("Notes")}
+      onRestore={() => restoreApp("Finder")}
       onClose={() => closeApp("Finder")}
       onMinimize={() => minimizeApp("Finder")}
       appName="Finder"
