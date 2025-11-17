@@ -30,7 +30,7 @@ export default function AppHandler({
   appName,
 }: {
   standardWidth?: number;
-  standardHeight?: number;
+  standardHeight?: number | string;
   isSidebar?: boolean;
   isSidebarSearchBar?: boolean;
   isOverLayed?: boolean;
