@@ -16,7 +16,7 @@ export default function SettingsApp({ buttonPosition }: SettingsAppProps) {
   return (
     <AppHandler
       standardWidth={1000}
-      standardHeight={800}
+      standardHeight={"100%"}
       isOverLayed={true}
       navigateBarBGColor="bg-white"
       searchValue={searchValue}
