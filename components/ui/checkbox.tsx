@@ -13,6 +13,7 @@ export default function Checkbox({
         checked={checked}
         onChange={onChange}
         className="appearance-none relative h-6 w-6 border border-gray-300 checked:border-0 inset-shadow-sm/30  rounded-[7px] bg-transparent checked:bg-blue-600 checked:border-transparent transition-colors"
+        onMouseDown={(e) => e.stopPropagation()}
       />
       {checked && (
         <Check

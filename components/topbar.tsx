@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAppStore } from "../stores/appStore";
 import { AppsConfig } from "../AppsConfig";
+import Image from "next/image";
 
 export default function Topbar() {
   const [time, setTime] = useState(new Date());

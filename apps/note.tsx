@@ -88,6 +88,7 @@ export default function NoteApp({ buttonPosition }: NoteAppProps) {
                 placeholder="Note name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                onMouseDown={(e) => e.stopPropagation()}
               />
             <button
               onClick={closeModal}
@@ -101,6 +102,7 @@ export default function NoteApp({ buttonPosition }: NoteAppProps) {
               placeholder="Start writing your note here..."
               value={contents}
               onChange={(e) => setContents(e.target.value)}
+              onMouseDown={(e) => e.stopPropagation()}
             />
           </div>
         ) : (

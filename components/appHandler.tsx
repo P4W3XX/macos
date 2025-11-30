@@ -1,7 +1,7 @@
 "use client";
 
 import { Minimize2, X, Maximize2, Minus } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, useDragControls } from "motion/react";
 import { useState, useRef } from "react";
 import { useAppStore } from "../stores/appStore";
 import { Search } from "lucide-react";
@@ -60,6 +60,7 @@ export default function AppHandler({
     useAppStore();
   const [isTyping, setIsTyping] = useState(false);
   const motionRef = useRef<HTMLDivElement>(null);
+  const dragControls = useDragControls();
   const initialX =
     typeof window !== "undefined" && buttonPosition
       ? buttonPosition.x - window.innerWidth / 2
@@ -122,7 +123,8 @@ export default function AppHandler({
         duration: 0.2,
         type: "tween",
       }}
-      drag
+      dragControls={dragControls}
+      dragListener={false}
       dragConstraints={dragConstraints}
       ref={motionRef}
       onDragEnd={() => {
@@ -141,15 +143,23 @@ export default function AppHandler({
       <div
         className={` p-3 ${!isOverLayed && navigateBarBGColor} ${
           isOverLayed
-            ? "absolute top-0 select-none touch-none left-0 border-none w-full"
+            ? "absolute top-0 select-none left-0 border-none w-full"
             : "relative"
         }`}
+        onPointerDown={(e) => {
+          e.preventDefault();
+          dragControls.start(e,{snapToCursor:true});
+        }}
       >
         <div className=" w-full flex gap-x-2 select-none touch-none border-none ">
           <div
             onMouseEnter={() => setIsActionButtonHovered(true)}
             onMouseLeave={() => setIsActionButtonHovered(false)}
             onClick={onClose}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              dragControls.start(e);
+            }}
             className=" size-4 bg-[#FF5F57] border border-black/20 rounded-full flex items-center justify-center cursor-pointer"
           >
             {isActionButtonHovered && (
@@ -160,6 +170,10 @@ export default function AppHandler({
             onMouseEnter={() => setIsActionButtonHovered(true)}
             onMouseLeave={() => setIsActionButtonHovered(false)}
             onClick={onMinimize}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              dragControls.start(e);
+            }}
             className=" size-4 bg-[#FEBC2E] rounded-full border border-black/20 flex items-center justify-center"
           >
             {isActionButtonHovered && (
@@ -174,6 +188,10 @@ export default function AppHandler({
             onMouseEnter={() => setIsActionButtonHovered(true)}
             onMouseLeave={() => setIsActionButtonHovered(false)}
             onClick={() => setIsExpanded(!isExpanded)}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              dragControls.start(e);
+            }}
           >
             {isActionButtonHovered &&
               (isExpanded ? (
@@ -190,7 +208,13 @@ export default function AppHandler({
           </div>
         </div>
         {!isOverLayed && (
-          <h1 className="text-black font-bold absolute top-2 right-0 left-0 mx-auto w-fit">
+          <h1
+            className="text-black font-bold absolute top-2 right-0 left-0 mx-auto w-fit"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              dragControls.start(e);
+            }}
+          >
             {appName}
           </h1>
         )}
@@ -211,6 +235,7 @@ export default function AppHandler({
               className="w-full p-1 pl-6 bg-zinc-200 text-black placeholder:text-zinc-400 font-semibold text-sm px-2 rounded-lg"
               onFocus={() => setIsTyping(true)}
               onBlur={() => setIsTyping(false)}
+              onMouseDown={(e) => e.stopPropagation()}
             />
             <motion.button
               animate={{
@@ -226,91 +251,92 @@ export default function AppHandler({
         )}
       </div>
       {isSidebar && (
-      <div className=" flex h-full">
-        <div
-          className={` bg-zinc-100 overflow-hidden border-r px-3 ${
-            isOverLayed ? "pt-10" : "pt-5"
-          } max-w-[300px] min-w-[300px]`}
-        >
-          <div>
-            <h1 className=" font-bold text-2xl">{appName}</h1>
-            {isSidebarSearchBar && (
-              <div className=" pt-2 flex select-none relative touch-none">
-                <Search
-                  size={16}
-                  className=" absolute left-1 top-4 text-zinc-400"
-                />
-                <motion.input
-                  animate={{
-                    marginRight: !isTyping ? 0 : 10,
-                  }}
-                  type="text"
-                  value={sideBarSearchValue}
-                  onChange={(e) => onSideBarSearchChange?.(e.target.value)}
-                  placeholder="Search..."
-                  className="w-full p-1 bg-zinc-200 h-8 pl-6 text-black placeholder:text-zinc-400 font-medium text-sm px-2 rounded-md"
-                  onFocus={() => setIsTyping(true)}
-                  onBlur={() => setIsTyping(false)}
-                />
-                <motion.button
-                  animate={{
-                    width: !isTyping ? 0 : "auto",
-                    opacity: isTyping ? 1 : 0,
-                  }}
-                  onClick={() => onSideBarSearchChange?.("")}
-                  className=" text-blue-500 font-medium"
-                >
-                  Cancel
-                </motion.button>
+        <div className=" flex h-full">
+          <div
+            className={` bg-zinc-100 overflow-hidden border-r px-3 ${
+              isOverLayed ? "pt-10" : "pt-5"
+            } max-w-[300px] min-w-[300px]`}
+          >
+            <div>
+              <h1 className=" font-bold text-2xl">{appName}</h1>
+              {isSidebarSearchBar && (
+                <div className=" pt-2 flex select-none relative touch-none">
+                  <Search
+                    size={16}
+                    className=" absolute left-1 top-4 text-zinc-400"
+                  />
+                  <motion.input
+                    animate={{
+                      marginRight: !isTyping ? 0 : 10,
+                    }}
+                    type="text"
+                    value={sideBarSearchValue}
+                    onChange={(e) => onSideBarSearchChange?.(e.target.value)}
+                    placeholder="Search..."
+                    className="w-full p-1 bg-zinc-200 h-8 pl-6 text-black placeholder:text-zinc-400 font-medium text-sm px-2 rounded-md"
+                    onFocus={() => setIsTyping(true)}
+                    onBlur={() => setIsTyping(false)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                  />
+                  <motion.button
+                    animate={{
+                      width: !isTyping ? 0 : "auto",
+                      opacity: isTyping ? 1 : 0,
+                    }}
+                    onClick={() => onSideBarSearchChange?.("")}
+                    className=" text-blue-500 font-medium"
+                  >
+                    Cancel
+                  </motion.button>
+                </div>
+              )}
+            </div>
+            {isSidebar && sideBarItems && (
+              <div className=" mt-3 flex flex-col">
+                {sideBarItems &&
+                  sideBarItems.map((item, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSideBarActiveItem(item.title)}
+                      className={`w-full text-left flex h-10 items-center p-2 rounded-lg  ${
+                        sideBarActiveItem === item.title
+                          ? "bg-blue-500 text-white hover:bg-blue-600"
+                          : "hover:bg-black/5"
+                      }`}
+                    >
+                      <Image
+                        src={item.icon}
+                        alt={item.title}
+                        width={30}
+                        height={30}
+                        quality={100}
+                        className=" mr-2"
+                      />
+                      <h1
+                        className={
+                          sideBarActiveItem === item.title
+                            ? "font-normal"
+                            : "font-medium"
+                        }
+                      >
+                        {item.title}
+                      </h1>
+                    </button>
+                  ))}
               </div>
             )}
           </div>
-          {isSidebar && sideBarItems && (
-            <div className=" mt-3 flex flex-col">
-              {sideBarItems &&
-                sideBarItems.map((item, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSideBarActiveItem(item.title)}
-                    className={`w-full text-left flex h-10 items-center p-2 rounded-lg  ${
-                      sideBarActiveItem === item.title
-                        ? "bg-blue-500 text-white hover:bg-blue-600"
-                        : "hover:bg-black/5"
-                    }`}
-                  >
-                    <Image
-                      src={item.icon}
-                      alt={item.title}
-                      width={30}
-                      height={30}
-                      quality={100}
-                      className=" mr-2"
-                    />
-                    <h1
-                      className={
-                        sideBarActiveItem === item.title
-                          ? "font-normal"
-                          : "font-medium"
-                      }
-                    >
-                      {item.title}
-                    </h1>
-                  </button>
-                ))}
+          {isSidebar && sideBarItems && sideBarActiveItem ? (
+            <div className=" flex-1 overflow-auto w-full bg-white z-10">
+              {
+                sideBarItems.find((item) => item.title === sideBarActiveItem)
+                  ?.component
+              }
             </div>
+          ) : (
+            children
           )}
         </div>
-        {isSidebar && sideBarItems && sideBarActiveItem ? (
-          <div className=" flex-1 overflow-auto w-full bg-white z-10">
-            {
-              sideBarItems.find((item) => item.title === sideBarActiveItem)
-                ?.component
-            }
-          </div>
-        ) : (
-          children
-        )}
-      </div>
       )}
       {!isSidebar && children}
     </motion.main>

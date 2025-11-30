@@ -28,6 +28,7 @@ export default function SearchBar({
         className=" p-1 border bg-white pl-6 w-full text-black placeholder:text-zinc-400 font-semibold text-sm px-2 border-zinc-300 rounded-lg"
         onFocus={() => setIsTyping(true)}
         onBlur={() => setIsTyping(false)}
+        onMouseDown={(e) => e.stopPropagation()}
       />
       <motion.button
         initial={{ width: 0, opacity: 0 }}

@@ -80,6 +80,7 @@ useEffect(()=>{
             }
           }}
           value={value}
+          onMouseDown={(e) => e.stopPropagation()}
         />
       </section>
       <aside className="w-full grid-cols-4 grid border-none">
