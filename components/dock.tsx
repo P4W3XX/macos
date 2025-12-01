@@ -7,7 +7,6 @@ import { useAppStore } from "../stores/appStore";
 import { useRef, useState, useLayoutEffect, useCallback } from "react";
 import useAppearanceSettings from "@/stores/settingsStore";
 
-// Stałe
 const BASE_ICON_SIZE = 64;
 const GAP_PX = 2;
 
@@ -15,10 +14,9 @@ export default function Dock() {
   const { apps, toggleApp, minimizeApp, restoreApp, setPosition } =
     useAppStore();
 
-  const { dockAnimation } = useAppearanceSettings(); // Wartość z ustawień
+  const { dockAnimation } = useAppearanceSettings();
 
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  // Zmiana: ustawiamy stan mouseX tylko, gdy dockAnimation jest włączone
   const [mouseX, setMouseX] = useState<number | null>(null);
   const [baseCenters, setBaseCenters] = useState<Record<string, number>>({});
 
@@ -36,9 +34,6 @@ export default function Dock() {
 
       setBaseCenters(newCenters);
     };
-
-    // Mierzenie center zawsze jest potrzebne, nawet bez animacji,
-    // jeśli dock ma pozostać w tym samym miejscu.
     measureCenters();
 
     window.addEventListener("resize", measureCenters);
@@ -58,7 +53,6 @@ export default function Dock() {
           const rect = el.getBoundingClientRect();
           const centerX = rect.left + rect.width / 2;
           const centerY = rect.top + rect.height / 2;
-          // Ustawia pozycję startową animacji okna
           setPosition(appName, { x: centerX, y: centerY });
         }
         toggleApp(appName);
@@ -68,14 +62,12 @@ export default function Dock() {
   );
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Aktualizuj mouseX tylko, jeśli animacja jest włączona
     if (dockAnimation) {
       setMouseX(e.clientX);
     }
   };
 
   const handleMouseLeave = () => {
-    // Resetuj mouseX tylko, jeśli animacja jest włączona
     if (dockAnimation) {
       setMouseX(null);
     }
@@ -83,7 +75,6 @@ export default function Dock() {
 
   const getIconAnimation = useCallback(
     (appName: string) => {
-      // Zmiana: Jeśli dockAnimation jest false, zwróć domyślne wartości
       if (!dockAnimation || mouseX === null || !baseCenters[appName]) {
         return { scale: 1, x: 0, y: 0 };
       }
@@ -104,7 +95,6 @@ export default function Dock() {
 
       return { scale, x, y };
     },
-    // Dodajemy dockAnimation do zależności, aby hook był reagował na zmianę ustawienia
     [mouseX, baseCenters, dockAnimation]
   );
 
@@ -117,13 +107,11 @@ export default function Dock() {
              shadow-[0_4px_30px_20px_rgba(0,0,0,0.15)]
              h-20 rounded-[22px]
              px-1"
-      // Warunkowe ustawienie event handlerów
       onMouseMove={dockAnimation ? handleMouseMove : undefined}
       onMouseLeave={dockAnimation ? handleMouseLeave : undefined}
     >
       <div className="flex items-end h-full" style={{ gap: `${GAP_PX}px` }}>
         {DockApps.map((app) => {
-          // Funkcja getIconAnimation już zajmuje się warunkową animacją
           const { scale, x, y } = getIconAnimation(app.name);
 
           return (
@@ -132,7 +120,6 @@ export default function Dock() {
               ref={(el: HTMLButtonElement | null) => {
                 buttonRefs.current[app.name] = el;
               }}
-              // Zmiana: animate zawsze używa wartości ze scale, x, y, które będą równe {1, 0, 0} gdy animacja jest wyłączona
               animate={{ scale, x, y }}
               transition={{
                 type: "spring",
@@ -140,7 +127,6 @@ export default function Dock() {
                 damping: 20,
                 mass: 0.8,
               }}
-              // whileTap nadal działa
               whileTap={{ scale: scale * 0.9 }}
               onClick={() => handleClick(app.name)}
               className="group relative"
@@ -160,8 +146,6 @@ export default function Dock() {
                 height={BASE_ICON_SIZE}
                 className="select-none pointer-events-none"
               />
-
-              {/* Kropka */}
               <AnimatePresence>
                 <motion.div
                   initial={{ scale: 0 }}

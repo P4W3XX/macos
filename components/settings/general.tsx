@@ -12,11 +12,6 @@ export default function GeneralPage() {
     { name: "Software Update", icon: "/general.png" },
     { name: "Storage", icon: "/storage.png" },
   ];
-  const setting2 = [
-    { name: "AutoFill & Passwords", icon: "/autofill.png" },
-    { name: "Date & Time", icon: "/datetime.png" },
-    { name: "Language & Region", icon: "/language.png" },
-  ];
   const specialSettings = [
     { name: "Apple Care & Warranty", icon: "/healthcare.png" },
     { name: "AirDrop & Handoff", icon: "/airdrop.png" },
