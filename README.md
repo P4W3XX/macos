@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## macOS Inspired Desktop
 
-## Getting Started
+![Project preview showing the macOS styled desktop](public/ReadmeImage.png)
 
-First, run the development server:
+Interaktywny klon pulpitu macOS, zrealizowany w Next.js App Router. Okna aplikacji są przeciągalne, z możliwością minimalizacji oraz zapamiętywania pozycji. Dostępne są mini‑aplikacje (kalkulator, notatnik, ustawienia), dock oraz pasek statusu, które współdziałają dzięki globalnemu store.
+
+## Stos technologiczny
+
+- Next.js 15 (App Router) + React Server Components
+- Tailwind CSS i animacje z `motion/react`
+- Zustand (`stores/*`) do zarządzania stanem okien i ustawień
+- Ikony Lucide, komponenty UI custom + shadcn-inspired
+
+## Jak uruchomić
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Następnie otwórz `http://localhost:3000`. Wszelkie zmiany w katalogu `app/` oraz `apps/` odświeżą UI w czasie rzeczywistym.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Dostępne skrypty
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` – tryb deweloperski
+- `npm run build` – build produkcyjny
+- `npm run start` – uruchomienie buildu
 
-## Learn More
+## Struktura projektu
 
-To learn more about Next.js, take a look at the following resources:
+- `app/` – routing Next.js oraz layout root
+- `apps/` – implementacje aplikacji (kalkulator, notatki, finder, ustawienia)
+- `components/` – wspólne elementy UI (okna, dock, topbar, ustawienia)
+- `stores/` – Zustand stores (`appStore`, `settingsStore`, `noteStore`)
+- `public/` – statyczne zasoby, w tym `ReadmeImage.png`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Rozwój
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Dodaj nową aplikację w `apps/` i zarejestruj ją w `appsConfig.ts`.
+2. Jeśli chcesz, by pojawiła się w Docku, uzupełnij ikonę w `public/appsIcons/`.
+3. Styluj za pomocą Tailwind; w razie potrzeby rozszerz `globals.css`.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Pull requesty i nowe pomysły mile widziane.
